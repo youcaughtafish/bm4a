@@ -1,0 +1,1 @@
+made changes to support beermap2.  created new localhost_store.bks (dev ssl cert)

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">BeerMap4Android</string>
+	
+	<!-- <string name="web_service_address">spacepocalypse.com</string> -->
+	<string name="web_service_address">192.168.1.132</string>
+	<string name="webServiceResource">/beermap2/android</string>
+	
+	<string name="label">BeerMap</string>
+	
+	<!-- service name for login -->
+	<string name="service_name_login">login</string>
+	
+	<!-- service name for search by name -->
+	<string name="service_name_beer">beer</string>
+
+	<!-- service name for find all rating types -->
+	<string name="service_name_rating">rating</string>
+	
+	<!-- Label above username EditText -->
+	<string name="login_activity_username_label">Username</string>
+	
+	<!-- Label above password EditText -->
+	<string name="login_activity_password_label">Password</string>
+	
+	<!-- Button to sign in after entering username and password -->
+	<string name="login_activity_ok_button">Sign in</string>
+
+	<!-- Message shown in dialog if the username or password is invalid. -->
+	<string name="login_activity_loginfail_text_both">The username or password isn\'t valid. A Sample SyncAdapter account is required. Please try again. </string>
+		
+	<!-- Message shown in dialog if the password is invalid -->
+	<string name="login_activity_loginfail_text_pwonly">You entered the wrong password or your account has changed.  Please re-enter your password.</string>
+		
+	<!-- Message shown in dialog to prompt the user for their password -->
+	<string name="login_activity_loginfail_text_pwmissing">Type the password for this account.</string>
+	
+	<!-- Message shown if the provided account doesn't support the current activity. -->
+	<string name="login_activity_newaccount_text">Sign in to BeerMap.</string>
+
+	<!-- Button that takes the user to the "sign in" screen -->
+	<string name="sign_in_button_label">Sign in</string>
+	
+	<!-- Button for going to the previous screen or step -->
+	<string name="back_button_label">Back</string>
+	
+	<!-- Button to cancel the current operation -->
+	<string name="cancel_button_label">Cancel</string>
+	
+	 <!-- Message shown in progress dialog while app connects to the server -->
+    <string name="ui_activity_authenticating">Authenticating\u2026</string>
+    <item type="integer" format="integer" name="sslPort">8443</item>
+    <item type="integer" format="integer" name="nonSslPort">8080</item>
+    <string name="sslHttp">https://</string>
+    <string name="nonSslHttp">http://</string>
+
+    <string name="credentialsFilename">user_credentials</string>
+    <item name="useLogonCacheing" format="boolean" type="bool">false</item>
+    <color name="nameDisplayColor">#FFFF00</color>
+    <string name="displaySingleKey">com.spacepocalypse.display_single_key</string>
+    <item type="integer" format="integer" name="displaySingleRequestCode">1337</item>
+    <item type="integer" format="integer" name="searchResultsNameFontSize">18</item>
+    <item type="integer" format="integer" name="displaySingleNameFontSize">28</item>
+    <string name="displaySingleEditBtnText_edit">Edit</string>
+    <string name="displaySingleEditBtnText_cancel">Cancel</string>
+    <string name="displaySingle_result_key">com.spacepocalypse.display_single_result_key</string>
+    <string name="user_key">com.spacepocalypse.user</string>
+    <item type="integer" format="integer" name="displaySingle_numStars">5</item>
+    <string name="menu_edit">Edit</string>
+    <string name="displaySingle_rating_key">rating_key</string>
+    <string name="displaySingle_editCommentBtn_edit">Save Comment and Rating</string>
+    <string name="displaySingle_editCommentBtn_notedit">Edit Comment and Rating</string>
+    <string name="username">com.spacepocalypse.username</string>
+</resources>

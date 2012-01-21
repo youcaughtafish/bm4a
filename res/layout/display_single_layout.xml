@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/displaySingle_scroll" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent" android:layout_height="match_parent"
+		android:orientation="vertical">
+		<TextView android:text="Lorem ipsum namum naratum shinmu actun"
+			android:layout_width="wrap_content" android:textStyle="bold"
+			android:layout_height="wrap_content" android:textSize="28sp"
+			android:textColor="#FFFF00" android:id="@+id/displaySingle_beerName" />
+
+		<EditText android:id="@+id/displaySingle_name_edit"
+			android:layout_height="wrap_content" android:layout_width="fill_parent"
+			android:visibility="gone" />
+		<TextView android:id="@+id/displaySingle_abv"
+			android:layout_height="wrap_content" android:text="TextView"
+			android:layout_width="wrap_content"></TextView>
+		<EditText android:id="@+id/displaySingle_abv_edit"
+			android:layout_height="wrap_content" android:layout_width="fill_parent"
+			android:visibility="gone" />
+		<TextView android:id="@+id/displaySingle_descript"
+			android:layout_height="wrap_content" android:text="TextView"
+			android:layout_width="wrap_content"></TextView>
+		<EditText android:id="@+id/displaySingle_descript_edit"
+			android:layout_height="wrap_content" android:layout_width="fill_parent"
+			android:visibility="gone" />
+
+		<TextView android:id="@+id/displaySingle_rating_rating_title"
+			android:layout_height="wrap_content" android:text="Your rating:"
+			android:layout_width="wrap_content"></TextView>
+		<RatingBar android:id="@+id/displaySingle_ratingBar"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:isIndicator="true" android:numStars="5" android:stepSize="1"></RatingBar>
+		<TextView android:id="@+id/displaySingle_rating_comment_title"
+			android:layout_height="wrap_content" android:text="Your comment:"
+			android:layout_width="wrap_content"></TextView>
+		<TextView android:id="@+id/displaySingle_rating_comment"
+			android:layout_height="wrap_content" android:text="TextView"
+			android:layout_width="wrap_content"></TextView>
+		<EditText android:inputType="textMultiLine"
+			android:layout_height="wrap_content" android:layout_width="fill_parent"
+			android:id="@+id/displaySingle_rating_comment_edit"
+			android:visibility="gone" />
+		<Button android:text="Edit Comment and Rating" android:id="@+id/displaySingle_editCommentButton"
+			android:layout_width="match_parent" android:layout_height="wrap_content"
+			android:layout_marginTop="2dip" android:layout_marginBottom="2dip"></Button>
+		<Button android:text="Save" android:id="@+id/displaySingle_saveButton"
+			android:layout_width="match_parent" android:layout_height="wrap_content"
+			android:layout_marginTop="2dip" android:layout_marginBottom="2dip"
+			android:visibility="gone"></Button>
+
+	</LinearLayout>
+</ScrollView>
