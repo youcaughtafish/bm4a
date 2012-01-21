@@ -1,0 +1,6 @@
+B E E R M A P 4 A N D R O I D
+
+BeerMap for Android (bm4a) is an Android app that can be used with the BeerMap
+service (https://github.com/youcaughtafish/beermap2).  This project needs requires
+the Android SDK, as well as linking the build path with the beermap2 (link above)
+project.
