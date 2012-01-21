@@ -1,12 +1,9 @@
 In order to configure SSL, you must first create a certificate for tomcat to use:
-
-	
 	
 $JAVA_HOME/bin/keytool -genkey -alias tomcat -keyalg RSA
 
 the values entered in this wizard are specific to hostname on which tomcat is running.
-Specifically the
-'CN' (first) field, needs to match the hostname.
+Specifically the 'CN' (first) field, needs to match the hostname.
 
 After generating the key (will generate .keystore in the home directory unless 
 
@@ -19,7 +16,7 @@ you need to add the following line to the CATALINA_HOME/conf/server.xml file:
     <Connector
    port="8443" maxThreads="200"
    scheme="https" secure="true" SSLEnabled="true"
-   keystoreFile="C:/Users/dylan/.keystore" keystorePass="chang3m3"
+   keystoreFile="~/.keystore" keystorePass="chang3m3"
    clientAuth="false" sslProtocol="TLS"/>
 
 after this, restarting tomcat should show that a SSL listener is running on 8443.
@@ -33,10 +30,11 @@ Next is platform dependent:
 On *nix, the 
 __create_keystore.sh and create_keystore.sh scripts should work (set values in
 create_keystore.sh appropriately) (you will need to download the bouncycastle 
-provider if it is not included.)  This script will create the localhost_store.bks
-file that needs to be put in BM4A_WORKSPACE/res/raw.
+provider (http://www.bouncycastle.org/latest_releases.html) if it is not included.)  
+This script will create the localhost_store.bks file that needs to be put in 
+$BM4A_WORKSPACE/res/raw.
 
-On windows, the app Portecle seemed to work well.  Create a new BKS key, import
-the localhost_cert.pem file, say yeah yeah yeah, then save it as a bks key, copying
-the new bks file in BM4A/res/raw as above.   
+On windows, the app Portecle (http://portecle.sourceforge.net/) seemed to work well.  
+Create a new BKS key, import the localhost_cert.pem file, say yeah yeah yeah, then 
+save it as a bks key, copying the new bks file in $BM4A_WORKSPACE/res/raw.   
 
