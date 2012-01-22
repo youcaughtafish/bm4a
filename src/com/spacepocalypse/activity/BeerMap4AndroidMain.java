@@ -21,7 +21,7 @@ import com.spacepocalypse.R;
 import com.spacepocalypse.beermap2.domain.MappedUser;
 import com.spacepocalypse.beermap2.domain.json.JSONException;
 import com.spacepocalypse.beermap2.domain.json.JSONObject;
-import com.spacepocalypse.beermap2.service.AndroidBeerQueryServlet;
+import com.spacepocalypse.beermap2.service.Constants;
 import com.spacepocalypse.beermap2.service.BeerSearchEngine;
 import com.spacepocalypse.http.B4AWebClient;
 import com.spacepocalypse.http.HttpRestClient;
@@ -47,6 +47,7 @@ public class BeerMap4AndroidMain extends Activity  {
         if (!B4AWebClient.isInitialized()) {
         	B4AWebClient.initialize(this);
         }
+        
         setUser(null);
         setTimeoutTimeAbsMs(0);
         
@@ -92,6 +93,7 @@ public class BeerMap4AndroidMain extends Activity  {
 			public void onClick(final View v) {
 				TextView textInput = (TextView)findViewById(R.id.textInputTop);
 				final String searchQuery = textInput.getText().toString();
+				
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -102,20 +104,22 @@ public class BeerMap4AndroidMain extends Activity  {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						HttpRestClient client = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beer));
+						HttpRestClient client = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beersearch));
 						
-						client.addParam(AndroidBeerQueryServlet.KEY_QUERY, AndroidBeerQueryServlet.QUERY_TYPE_SEARCH);
-						client.addParam(AndroidBeerQueryServlet.KEY_SEARCH_TYPE, AndroidBeerQueryServlet.SEARCH_TYPE_BEER);	
-						client.addParam(BeerSearchEngine.QUERY_KEY_NAME, searchQuery);
+						client.addParam(Constants.KEY_QUERY, searchQuery);
+						
 						try {
 							client.execute(RequestMethod.POST);
+							
 						} catch (Exception e) {
-							e.printStackTrace();
+							Log.e(TAG, "Error occurred while searching for beers.", e);
 						}
 
 						String response = client.getResponse();
+						
 						if (response != null) {
 							Log.i(TAG, response);
+							
 						} else {
 							Log.w(TAG, "response is null.");
 							finish();
@@ -152,12 +156,12 @@ public class BeerMap4AndroidMain extends Activity  {
     
     private void checkAuth() {
     	if (System.currentTimeMillis() > getTimeoutTimeAbsMs()) {
+    		
     		Log.i(TAG, "Timeout occurred. Prompting user to login.");
+    		
     		Intent intent = new Intent(this, LogonActivity.class);
-    		if (getUser() != null) {
-    			intent.putExtra(getResources().getString(R.string.user_key), getUser());
-    		}
-			startActivityForResult(intent, LOGON_REQUEST_CODE);
+    		startActivityForResult(intent, LOGON_REQUEST_CODE);
+			
     	} else {
     		Log.i(TAG, "Timeout has not occurred.  User will auto-login.");
     	}
@@ -169,7 +173,16 @@ public class BeerMap4AndroidMain extends Activity  {
     		if (resultCode != RESULT_OK) {
     			setResult(RESULT_CANCELED);
     			finish();
+    		} else {
+    			if (data.getExtras() != null) {
+					Object userObj = data.getExtras().get(getString(R.string.user_key));
+					
+					if (userObj != null && userObj instanceof MappedUser) {
+						setUser((MappedUser)userObj);
+					}
+    			}
     		}
+    		
     	} else if (requestCode == SEARCH_REQUEST_CODE) {
     		runOnUiThread(new Runnable() {
 				@Override
@@ -179,6 +192,7 @@ public class BeerMap4AndroidMain extends Activity  {
 					}
 				}
 			});
+    		
     	} else {
     		runOnUiThread(new Runnable() {
 				@Override
@@ -208,22 +222,23 @@ public class BeerMap4AndroidMain extends Activity  {
     	
     	JSONObject credentialsObj = null;
     	FileInputStream fin = null;	
+    	
     	try {
 			fin = openFileInput(userCredentialsFilename);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
 			
 			StringBuilder sb = new StringBuilder();
 			String line = null;
+			
 			while ((line = reader.readLine()) != null){
 				sb.append(line);
 			}
+			
 			credentialsObj = new JSONObject(sb.toString());
-    	} catch (FileNotFoundException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (JSONException e) {
-			Log.e(TAG, e.getMessage());
+			
+    	} catch (Exception e) {
+			Log.e(TAG, "Error occurred while reading cached credentials.", e);
+			
 		} finally {
 			if (fin != null) {
 				try {
@@ -234,19 +249,20 @@ public class BeerMap4AndroidMain extends Activity  {
 			}
 		}
 		
-		if (credentialsObj.has("user")) {
+		if (credentialsObj.has(Constants.KEY_USER)) {
 			try {
-				setUser(MappedUser.createMappedUser(credentialsObj.getJSONObject("user")));
-			} catch (JSONException e) {
-				Log.e(TAG, e.getMessage());
+				setUser(MappedUser.createMappedUser(credentialsObj.getJSONObject(Constants.KEY_USER)));
+			} catch (Exception e) {
+				Log.e(TAG, "JSON exception while retrieving user from cache file", e);
 			}
 		}
 		
-		if (credentialsObj.has("timeoutAbsMs")) {
+		if (credentialsObj.has(Constants.KEY_TIMEOUT_MS)) {
 			try {
-				setTimeoutTimeAbsMs(credentialsObj.getLong("timeoutAbsMs"));
-			} catch (JSONException e) {
-				Log.e(TAG, e.getMessage());
+				setTimeoutTimeAbsMs(credentialsObj.getLong(Constants.KEY_TIMEOUT_MS));
+				
+			} catch (Exception e) {
+				Log.e(TAG, "JSON exception while retrieving timeout from cache file", e);
 			}
 		}
     }

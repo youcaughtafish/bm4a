@@ -82,60 +82,75 @@ public final class R {
         public static final int app_name=0x7f050000;
         /**  Button for going to the previous screen or step 
          */
-        public static final int back_button_label=0x7f05000f;
+        public static final int back_button_label=0x7f050014;
         /**  Button to cancel the current operation 
          */
-        public static final int cancel_button_label=0x7f050010;
-        public static final int credentialsFilename=0x7f050014;
-        public static final int displaySingleEditBtnText_cancel=0x7f050017;
-        public static final int displaySingleEditBtnText_edit=0x7f050016;
-        public static final int displaySingleKey=0x7f050015;
-        public static final int displaySingle_editCommentBtn_edit=0x7f05001c;
-        public static final int displaySingle_editCommentBtn_notedit=0x7f05001d;
-        public static final int displaySingle_rating_key=0x7f05001b;
-        public static final int displaySingle_result_key=0x7f050018;
+        public static final int cancel_button_label=0x7f050015;
+        public static final int credentialsFilename=0x7f050019;
+        public static final int displaySingleEditBtnText_cancel=0x7f05001c;
+        public static final int displaySingleEditBtnText_edit=0x7f05001b;
+        public static final int displaySingleKey=0x7f05001a;
+        public static final int displaySingle_editCommentBtn_edit=0x7f050021;
+        public static final int displaySingle_editCommentBtn_notedit=0x7f050022;
+        public static final int displaySingle_rating_key=0x7f050020;
+        public static final int displaySingle_result_key=0x7f05001d;
         public static final int label=0x7f050003;
         /**  Message shown in dialog if the username or password is invalid. 
          */
-        public static final int login_activity_loginfail_text_both=0x7f05000a;
+        public static final int login_activity_loginfail_text_both=0x7f05000f;
         /**  Message shown in dialog to prompt the user for their password 
          */
-        public static final int login_activity_loginfail_text_pwmissing=0x7f05000c;
+        public static final int login_activity_loginfail_text_pwmissing=0x7f050011;
         /**  Message shown in dialog if the password is invalid 
          */
-        public static final int login_activity_loginfail_text_pwonly=0x7f05000b;
+        public static final int login_activity_loginfail_text_pwonly=0x7f050010;
         /**  Message shown if the provided account doesn't support the current activity. 
          */
-        public static final int login_activity_newaccount_text=0x7f05000d;
+        public static final int login_activity_newaccount_text=0x7f050012;
         /**  Button to sign in after entering username and password 
          */
-        public static final int login_activity_ok_button=0x7f050009;
+        public static final int login_activity_ok_button=0x7f05000e;
         /**  Label above password EditText 
          */
-        public static final int login_activity_password_label=0x7f050008;
+        public static final int login_activity_password_label=0x7f05000d;
         /**  Label above username EditText 
          */
-        public static final int login_activity_username_label=0x7f050007;
-        public static final int menu_edit=0x7f05001a;
-        public static final int nonSslHttp=0x7f050013;
-        /**  service name for search by name 
+        public static final int login_activity_username_label=0x7f05000c;
+        public static final int menu_edit=0x7f05001f;
+        public static final int nonSslHttp=0x7f050018;
+        /**  service name for find all rating types 
          */
-        public static final int service_name_beer=0x7f050005;
+        public static final int service_name_all_rating_types=0x7f050008;
+        /**  service name for beer insert 
+         */
+        public static final int service_name_beerinsert=0x7f050007;
+        /**  service name for beer search 
+         */
+        public static final int service_name_beersearch=0x7f050005;
+        /**  service name for beer update 
+         */
+        public static final int service_name_beerupdate=0x7f050006;
         /**  service name for login 
          */
         public static final int service_name_login=0x7f050004;
-        /**  service name for find all rating types 
+        /**  service name for inserting ratings 
          */
-        public static final int service_name_rating=0x7f050006;
+        public static final int service_name_ratinginsert=0x7f05000a;
+        /**  service name for finding ratings 
+         */
+        public static final int service_name_ratingsearch=0x7f050009;
+        /**  service name for updating ratings 
+         */
+        public static final int service_name_ratingupdate=0x7f05000b;
         /**  Button that takes the user to the "sign in" screen 
          */
-        public static final int sign_in_button_label=0x7f05000e;
-        public static final int sslHttp=0x7f050012;
+        public static final int sign_in_button_label=0x7f050013;
+        public static final int sslHttp=0x7f050017;
         /**  Message shown in progress dialog while app connects to the server 
          */
-        public static final int ui_activity_authenticating=0x7f050011;
-        public static final int user_key=0x7f050019;
-        public static final int username=0x7f05001e;
+        public static final int ui_activity_authenticating=0x7f050016;
+        public static final int user_key=0x7f05001e;
+        public static final int username=0x7f050023;
         public static final int webServiceResource=0x7f050002;
         /**  <string name="web_service_address">spacepocalypse.com</string> 
          */

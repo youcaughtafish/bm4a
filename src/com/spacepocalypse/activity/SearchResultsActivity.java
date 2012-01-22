@@ -19,7 +19,7 @@ import com.spacepocalypse.beermap2.domain.MappedBeerRating;
 import com.spacepocalypse.beermap2.domain.MappedUser;
 import com.spacepocalypse.beermap2.domain.json.JSONArray;
 import com.spacepocalypse.beermap2.domain.json.JSONException;
-import com.spacepocalypse.beermap2.service.AndroidBeerQueryServlet;
+import com.spacepocalypse.beermap2.service.Constants;
 import com.spacepocalypse.beermap2.service.BeerSearchEngine;
 import com.spacepocalypse.http.HttpRestClient;
 import com.spacepocalypse.http.HttpRestClient.RequestMethod;
@@ -55,85 +55,100 @@ public class SearchResultsActivity extends Activity {
 					if (response != null) {
 						try {
 							setSearchResults(MappedBeer.createListFromJSONArray(response));
-						} catch (NumberFormatException e) {
+						
+						} catch (Exception e) {
 							Log.e(
 									TAG, 
 									Conca.t("Error parsing number (probably abv). JSON=[", response, "]"), 
 									e
 							);
-						} catch (JSONException e) {
-							Log.e(
-									TAG, 
-									Conca.t("JSON error. JSON=[", response, "]"), 
-									e
-							);
-						}
+						} 
 						
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								final ListView lv1 = resetSearchResultsListView();
-
-								lv1.setOnItemClickListener(new OnItemClickListener() {
-									@Override
-									public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-										showDialog();
-
-										Object o = lv1.getItemAtPosition(position);
-										MappedBeer selectedBeer = (MappedBeer) o;
-
-										setLastSelected(selectedBeer);
-										Intent intent = new Intent(v.getContext(), DisplaySingleActivity.class);
-
-
-										MappedUser user = (MappedUser) getIntent().getSerializableExtra(getResources().getString(R.string.user_key));
-										HttpRestClient client = new HttpRestClient(SearchResultsActivity.this, getString(R.string.service_name_rating));
-										client.addParam(AndroidBeerQueryServlet.KEY_QUERY, AndroidBeerQueryServlet.QUERY_TYPE_SEARCH);
-										client.addParam(AndroidBeerQueryServlet.KEY_SEARCH_TYPE, AndroidBeerQueryServlet.SEARCH_TYPE_RATING);
-										client.addParam(BeerSearchEngine.QUERY_KEY_BEER_ID, String.valueOf(selectedBeer.getId()));
-										client.addParam(BeerSearchEngine.QUERY_KEY_USER_ID, String.valueOf(user.getId()));
-
-										client.execute(RequestMethod.POST);
-
-										String response = client.getResponse();
-										if (response == null) {
-											Log.w(
-													TAG, 
-													"Response was null when trying to find user rating. user id=[" 
-													+ user.getId() + "] beer id=[" + selectedBeer.getId() + "]"
-											);
-										} else {
-											try {
-												JSONArray jsonArr = new JSONArray(response);
-												if (jsonArr.length() > 0) {
-													MappedBeerRating rating = MappedBeerRating.createMappedBeerRating(jsonArr.getJSONObject(0).toString());
-													intent.putExtra(getResources().getString(R.string.displaySingle_rating_key), rating);
-												}
-											} catch (JSONException e) {
-												Log.e(TAG, "JSON parsing problem. JSON string=[" + response + "]", e);
-											}
-
-										}
-
-
-										String key = getResources().getString(R.string.displaySingleKey);
-										int displaySingleRequestCode  = getResources().getInteger(R.integer.displaySingleRequestCode);
-										intent.putExtra(key, selectedBeer);
-										intent.putExtra(getResources().getString(R.string.user_key), user);
-										startActivityForResult(intent, displaySingleRequestCode);
-									}
-								});
-							}
-
-
-						});
-					}
+						runOnUiThread(createSearchResultListView());
+					} 
+					
 					setInitialized(true);
 					dismissDialog();
 				}
+
 			});
 			t.start();
 		}
+	}
+	
+	private Runnable createSearchResultListView() {
+		return new Runnable() {
+			@Override
+			public void run() {
+				final ListView lv1 = resetSearchResultsListView();
+				
+				lv1.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+						// first show the "loading" dialog
+						showDialog();
+						
+						// and now we need to pull the rating data
+						
+						// get the selected item
+						Object o = lv1.getItemAtPosition(position);
+						MappedBeer selectedBeer = (MappedBeer) o;
+						
+						// cached which was last selected (to update later if necessary)
+						setLastSelected(selectedBeer);
+						
+						// we will display a single item, get the display single intent ready
+						Intent intent = new Intent(v.getContext(), DisplaySingleActivity.class);
+						
+						// pull the user pojo
+						MappedUser user = (MappedUser) getIntent().getSerializableExtra(getResources().getString(R.string.user_key));
+						
+						// create a request to find the rating for this beer for this user
+						HttpRestClient client = new HttpRestClient(SearchResultsActivity.this, getString(R.string.service_name_ratingsearch));
+						
+						client.addParam(Constants.QUERY_KEY_BEER_ID, String.valueOf(selectedBeer.getId()));
+						client.addParam(Constants.QUERY_KEY_USER_ID, String.valueOf(user.getId()));
+						
+						client.execute(RequestMethod.POST);
+						
+						// format the response
+						String response = client.getResponse();
+						if (response == null) {
+							Log.w(
+								TAG,
+								Conca.t(
+									"Response was null when trying to find user rating. user id=[" 
+									,user.getId(), "] beer id=[", selectedBeer.getId(), "]"
+								)
+							);
+							
+						} else {
+							try {
+								// if everything went according to plan, we will put the 
+								// (mapped) result in the display single intent
+								JSONArray jsonArr = new JSONArray(response);
+								if (jsonArr.length() > 0) {
+									MappedBeerRating rating = MappedBeerRating.createMappedBeerRating(jsonArr.getJSONObject(0).toString());
+									intent.putExtra(getResources().getString(R.string.displaySingle_rating_key), rating);
+								}
+								
+							} catch (JSONException e) {
+								Log.e(TAG, Conca.t("JSON parsing problem. JSON string=[", response, "]"), e);
+							}
+						}
+						
+						// start the display single activity
+						final String key = getResources().getString(R.string.displaySingleKey);
+						final int displaySingleRequestCode  = getResources().getInteger(R.integer.displaySingleRequestCode);
+						
+						intent.putExtra(key, selectedBeer);
+						intent.putExtra(getResources().getString(R.string.user_key), user);
+						
+						startActivityForResult(intent, displaySingleRequestCode);
+					}
+				});
+			}
+		};
 	}
 
 	private void showDialog() {

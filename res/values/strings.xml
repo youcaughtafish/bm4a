@@ -11,11 +11,26 @@
 	<!-- service name for login -->
 	<string name="service_name_login">login</string>
 	
-	<!-- service name for search by name -->
-	<string name="service_name_beer">beer</string>
-
+	<!-- service name for beer search -->
+	<string name="service_name_beersearch">beersearch</string>
+	
+		<!-- service name for beer update -->
+	<string name="service_name_beerupdate">beerupdate</string>
+	
+	<!-- service name for beer insert -->
+	<string name="service_name_beerinsert">beerinsert</string>
+	
 	<!-- service name for find all rating types -->
-	<string name="service_name_rating">rating</string>
+	<string name="service_name_all_rating_types">allratingtypes</string>
+
+	<!-- service name for finding ratings -->
+	<string name="service_name_ratingsearch">ratingsearch</string>
+	
+	<!-- service name for inserting ratings -->
+	<string name="service_name_ratinginsert">ratinginsert</string>
+	
+	<!-- service name for updating ratings -->
+	<string name="service_name_ratingupdate">ratingupdate</string>
 	
 	<!-- Label above username EditText -->
 	<string name="login_activity_username_label">Username</string>

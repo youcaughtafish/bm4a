@@ -27,15 +27,17 @@ import com.spacepocalypse.beermap2.domain.MappedValue;
 import com.spacepocalypse.beermap2.domain.json.JSONArray;
 import com.spacepocalypse.beermap2.domain.json.JSONException;
 import com.spacepocalypse.beermap2.domain.json.JSONObject;
-import com.spacepocalypse.beermap2.service.AndroidBeerQueryServlet;
+import com.spacepocalypse.beermap2.service.Constants;
 import com.spacepocalypse.http.B4AWebClient;
+import com.spacepocalypse.http.HttpClient;
 import com.spacepocalypse.http.HttpRestClient;
 import com.spacepocalypse.http.HttpRestClient.RequestMethod;
 import com.spacepocalypse.http.NotInitializedException;
+import com.spacepocalypse.util.Conca;
 
 public class DisplaySingleActivity extends Activity {
 	private static final String TAG = "DisplaySingleActivity";
-	private static List<MappedValue> valueTypes;
+	private static List<MappedValue> cachedValueTypes;
 	private boolean editingCurrentBeer;
 	private boolean editingComment;
 	private MappedBeer thisBeer;
@@ -45,21 +47,24 @@ public class DisplaySingleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if (valueTypes == null) {
-			HttpRestClient client = new HttpRestClient(this, getString(R.string.service_name_rating));
-			client.addParam(AndroidBeerQueryServlet.KEY_QUERY, AndroidBeerQueryServlet.QUERY_TYPE_SEARCH);
-			client.addParam(AndroidBeerQueryServlet.KEY_SEARCH_TYPE, AndroidBeerQueryServlet.SEARCH_TYPE_ALL_RATING_TYPES);
+		if (cachedValueTypes == null) {
+			HttpRestClient client = new HttpRestClient(this, getString(R.string.service_name_all_rating_types));
+			
 			client.execute(RequestMethod.POST);
 			String response = client.getResponse();
-			JSONArray jsonArr;
+			JSONArray jsonArr = null;
+			
 			try {
 				jsonArr = new JSONArray(response);
-				valueTypes = new ArrayList<MappedValue>();
+				
+				cachedValueTypes = new ArrayList<MappedValue>();
+				
 				for (int i = 0; i < jsonArr.length(); i++) {
-					valueTypes.add(MappedValue.createMappedValue(jsonArr.getJSONObject(i)));
+					cachedValueTypes.add(MappedValue.createMappedValue(jsonArr.getJSONObject(i)));
 				}
-			} catch (JSONException e) {
-				Log.w(TAG, "Error parsing JSON for rating value types. response=[" + response + "]", e);
+				
+			} catch (Exception e) {
+				Log.w(TAG, Conca.t("Error parsing JSON for rating value types. response=[", response, "]"), e);
 			}
 		}
 		
@@ -129,12 +134,14 @@ public class DisplaySingleActivity extends Activity {
 				EditText abvEdit = (EditText)findViewById(R.id.displaySingle_abv_edit);
 				try {
 					getThisBeer().setAbv(Double.valueOf(abvEdit.getText().toString()).floatValue());
+					
 				} catch (NumberFormatException e) {
 					Toast.makeText(DisplaySingleActivity.this,
 							"Abv is not a decimal number!",
 							Toast.LENGTH_LONG).show();
 					return;
 				}
+				
 				EditText nameEdit = (EditText)findViewById(R.id.displaySingle_name_edit);
 				getThisBeer().setName(nameEdit.getText().toString());
 				
@@ -142,35 +149,43 @@ public class DisplaySingleActivity extends Activity {
 				getThisBeer().setDescript(descriptEdit.getText().toString());
 				
 				JSONObject obj = new JSONObject(getThisBeer());
-				HttpRestClient client = new HttpRestClient(DisplaySingleActivity.this, getString(R.string.service_name_rating));
-				client.addParam(AndroidBeerQueryServlet.KEY_QUERY, AndroidBeerQueryServlet.QUERY_TYPE_UPDATE);
-				client.addParam(AndroidBeerQueryServlet.KEY_MAPPED_BEER, obj.toString());
+				
+				HttpRestClient client = new HttpRestClient(DisplaySingleActivity.this, getString(R.string.service_name_beerupdate));
+				client.addParam(Constants.KEY_MAPPED_BEER, obj.toString());
+				
 				client.execute(RequestMethod.POST);
 				
 				JSONObject result = null;
 				try {
 					result = new JSONObject(client.getResponse());
-				} catch (JSONException e1) {
-					Log.e(TAG, e1.getMessage());
+					
+				} catch (Exception e1) {
+					Log.e(TAG, "Error constructing json result object for beer update", e1);
 				}
-				if (result.has("success")) {
+				
+				if (result.has(Constants.KEY_BM4A_JSON_RESULT)) {
 					try {
-						if (result.getBoolean("success")) {
+						if (result.getBoolean(Constants.KEY_BM4A_JSON_RESULT)) {
+							
 							if (isEditingCurrentBeer()) {
 								saveBtn.setVisibility(View.GONE);
+								
 							} else {
 								saveBtn.setVisibility(View.VISIBLE);
 							}
+							
 							toggleVisibility();
 							setEditingCurrentBeer(!isEditingCurrentBeer());
 							copyTextFromEditToText();
+							
 						} else {
 							Toast.makeText(DisplaySingleActivity.this,
 									"There was a problem storing the changes!",
 									Toast.LENGTH_LONG).show();
 						}
-					} catch (JSONException e) {
-						Log.e(TAG, e.getMessage());
+						
+					} catch (Exception e) {
+						Log.e(TAG, "Error retrieving beer update result from json response.", e);
 					}
 				}
 			}
@@ -222,7 +237,7 @@ public class DisplaySingleActivity extends Activity {
 		rating.setBeer(getThisBeer());
 		
 		int ratingBarValue = (int)ratingBar.getRating();
-		for (MappedValue val : valueTypes) {
+		for (MappedValue val : cachedValueTypes) {
 			if (val.getValue() == ratingBarValue) {
 				rating.setRating(val);
 				break;
@@ -231,15 +246,29 @@ public class DisplaySingleActivity extends Activity {
 		
 		rating.setComment(editComment.getText().toString());
 		
-		boolean updateResult = false;
+		HttpRestClient httpClient = new HttpRestClient(this, getString(R.string.service_name_ratingupdate));
+		httpClient.addParam(Constants.KEY_MAPPED_RATING, new JSONObject(rating).toString());
+		
 		try {
-			updateResult = B4AWebClient.updateMappedBeerRating(rating);
-		} catch (NotInitializedException e1) {
-			Log.e(TAG, "B4AWebClient was not initialized when calling.", e1);
-			return;
-		} catch (JSONException e1) {
-			Log.e(TAG, "JSON error when attempting to update rating:[" + rating.toString() + "]", e1);
+			httpClient.execute(RequestMethod.POST);
+			
+		} catch (Exception e1) {
+			Log.e(TAG, Conca.t("Error when attempting to update rating:[", rating.toString(), "]"), e1);
 		}
+		
+		boolean updateResult = false;
+		JSONObject resultObj = null;
+		try {
+			resultObj = new JSONObject(httpClient.getResponse());
+
+			if (resultObj.has(Constants.KEY_BM4A_JSON_RESULT)) {
+				updateResult = resultObj.getBoolean(Constants.KEY_BM4A_JSON_RESULT);
+			}
+			
+		} catch (Exception e) {
+			Log.e(TAG, Conca.t("Error occurred when attempting to update rating:[", rating.toString(), "]"), e);
+		}
+		
 		
 		if (updateResult) {
 			editCommentButton.setText(getResources().getString(R.string.displaySingle_editCommentBtn_notedit));
@@ -251,6 +280,7 @@ public class DisplaySingleActivity extends Activity {
 			ratingBar.setIsIndicator(true);
 
 			setEditingComment(false);
+			
 		} else {
 			Toast.makeText(DisplaySingleActivity.this, "Error storing rating!", Toast.LENGTH_LONG);
 		}
@@ -266,7 +296,7 @@ public class DisplaySingleActivity extends Activity {
 		rating.setBeer(getThisBeer());
 		
 		int ratingBarValue = (int)ratingBar.getRating();
-		for (MappedValue val : valueTypes) {
+		for (MappedValue val : cachedValueTypes) {
 			if (val.getValue() == ratingBarValue) {
 				rating.setRating(val);
 				break;
@@ -275,14 +305,22 @@ public class DisplaySingleActivity extends Activity {
 		
 		rating.setComment(editComment.getText().toString());
 		
+		HttpRestClient httpClient = new HttpRestClient(this, getString(R.string.service_name_ratinginsert));
+		httpClient.addParam(Constants.KEY_MAPPED_RATING, new JSONObject(rating).toString());
+		
 		boolean insertResult = false;
+		
+		JSONObject resultObj = null;
 		try {
-			insertResult = B4AWebClient.insertMappedBeerRating(rating);
-		} catch (NotInitializedException e1) {
-			Log.e(TAG, "B4AWebClient was not initialized when calling.", e1);
-			return;
-		} catch (JSONException e1) {
-			Log.e(TAG, "JSON error when attempting to insert rating:[" + rating.toString() + "]", e1);
+			httpClient.execute(RequestMethod.POST);
+			resultObj = new JSONObject(httpClient.getResponse());
+
+			if (resultObj.has(Constants.KEY_BM4A_JSON_RESULT)) {
+				insertResult = resultObj.getBoolean(Constants.KEY_BM4A_JSON_RESULT);
+			}
+			
+		} catch (Exception e) {
+			Log.e(TAG, Conca.t("Error occurred when attempting to insert rating:[", rating.toString(), "]"), e);
 		}
 		
 		if (insertResult){
