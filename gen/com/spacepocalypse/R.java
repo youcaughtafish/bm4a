@@ -152,8 +152,6 @@ public final class R {
         public static final int user_key=0x7f05001e;
         public static final int username=0x7f050023;
         public static final int webServiceResource=0x7f050002;
-        /**  <string name="web_service_address">spacepocalypse.com</string> 
-         */
         public static final int web_service_address=0x7f050001;
     }
 }

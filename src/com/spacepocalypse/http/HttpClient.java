@@ -32,8 +32,8 @@ public class HttpClient extends DefaultHttpClient {
 	private SSLSocketFactory newSslSocketFactory() {
 		try {
 			KeyStore trusted = KeyStore.getInstance("BKS");
-//			InputStream in = context.getResources().openRawResource(R.raw.spacepocalypse_store);
-			InputStream in = context.getResources().openRawResource(R.raw.localhost_store);
+//InputStream in = context.getResources().openRawResource(R.raw.spacepocalypse_store);
+InputStream in = context.getResources().openRawResource(R.raw.localhost_store);
 			try {
 				trusted.load(in, "chang3m3".toCharArray());
 			} finally {

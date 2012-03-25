@@ -106,7 +106,7 @@ public class SearchResultsActivity extends Activity {
 						// create a request to find the rating for this beer for this user
 						HttpRestClient client = new HttpRestClient(SearchResultsActivity.this, getString(R.string.service_name_ratingsearch));
 						
-						client.addParam(Constants.QUERY_KEY_BEER_ID, String.valueOf(selectedBeer.getId()));
+						client.addParam(Constants.KEY_BEER_ID, String.valueOf(selectedBeer.getId()));
 						client.addParam(Constants.QUERY_KEY_USER_ID, String.valueOf(user.getId()));
 						
 						client.execute(RequestMethod.POST);

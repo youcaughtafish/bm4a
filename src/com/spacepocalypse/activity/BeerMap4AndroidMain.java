@@ -104,7 +104,7 @@ public class BeerMap4AndroidMain extends Activity  {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						HttpRestClient client = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beersearch));
+						final HttpRestClient client = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beersearch));
 						
 						client.addParam(Constants.KEY_QUERY, searchQuery);
 						

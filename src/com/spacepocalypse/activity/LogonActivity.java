@@ -76,17 +76,8 @@ public class LogonActivity extends Activity {
 		// get the password parameter (from the password_edit edittext field)
 		final String password = ((EditText)findViewById(R.id.password_edit)).getText().toString();
 		
-		// SHA1 hash the password
-    	String hashPass = null;
-    	try {
-			hashPass = AeSimpleSHA1.SHA1(password);
-
-    	} catch (Exception e) {
-			Log.e(TAG, "Error while attempting to hash password", e);
-		}
-		
 		// add hashed password to params
-		client.addParam(Constants.KEY_PASSWORD, hashPass);
+		client.addParam(Constants.KEY_PASSWORD, password);
 		
 		// execute request and get response
     	client.execute(RequestMethod.POST);
