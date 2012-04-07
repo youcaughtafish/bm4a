@@ -1,12 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-    <EditText android:layout_width="wrap_content" android:id="@+id/textInputTop" android:layout_height="wrap_content">
-        <requestFocus></requestFocus>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/textInputTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <requestFocus>
+        </requestFocus>
     </EditText>
-    <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/searchBtn" android:text="@android:string/search_go"></Button>
-    <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/insertBtn" android:text="Insert Beer"></Button>
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/search_go" >
+    </Button>
+
+    <Button
+        android:id="@+id/insertBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_beer_string" >
+    </Button>
+
+    <Button
+        android:id="@+id/main_my_beers_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/my_beers_string" />
+
 </TableLayout>

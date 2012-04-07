@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.spacepocalypse.R;
+import com.spacepocalypse.app.BeerMap4AndroidApp;
 import com.spacepocalypse.beermap2.domain.MappedUser;
 import com.spacepocalypse.beermap2.domain.json.JSONException;
 import com.spacepocalypse.beermap2.domain.json.JSONObject;
@@ -31,11 +32,10 @@ public class BeerMap4AndroidMain extends Activity  {
 	private static final int LOGON_REQUEST_CODE = 0;
 	private static final int SEARCH_REQUEST_CODE = 1;
 	private static final int INSERT_REQUEST_CODE = 2;
+	private static final int MY_BEERS_REQUEST_CODE = 3;
 	public static final String TAG = "BeerMap4AndroidMain";
 	public static final String RESULTS_KEY = "results";
 	
-	private MappedUser user;
-	private long timeoutTimeAbsMs;
 	private ProgressDialog progressDialog;
 	
     /** Called when the activity is first created. */
@@ -43,13 +43,6 @@ public class BeerMap4AndroidMain extends Activity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main); 
-        
-        if (!B4AWebClient.isInitialized()) {
-        	B4AWebClient.initialize(this);
-        }
-        
-        setUser(null);
-        setTimeoutTimeAbsMs(0);
         
         initGui();
         
@@ -62,17 +55,30 @@ public class BeerMap4AndroidMain extends Activity  {
     }
 
 	private void initGui() {
-		Button searchBtn = (Button)findViewById(R.id.searchBtn);
-        searchBtn.setOnClickListener(createSearchBtnOnClickListener());
-        
-        Button insertBtn = (Button)findViewById(R.id.insertBtn);
-        insertBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(v.getContext(), InsertBeerActivity.class);
-				startActivityForResult(intent, INSERT_REQUEST_CODE);
-			}
-		});
+	    runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Button searchBtn = (Button)findViewById(R.id.searchBtn);
+                searchBtn.setOnClickListener(createSearchBtnOnClickListener());
+                
+                final Button insertBtn = (Button)findViewById(R.id.insertBtn);
+                insertBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), InsertBeerActivity.class);
+                        startActivityForResult(intent, INSERT_REQUEST_CODE);
+                    }
+                });
+                
+                final Button myBeersBtn = (Button)findViewById(R.id.main_my_beers_btn);
+                myBeersBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handleMyBeersBtnClick();
+                    }
+                });
+            }
+        });
 	}
 
 	private void deleteStoredCredentials() {
@@ -107,6 +113,7 @@ public class BeerMap4AndroidMain extends Activity  {
 						final HttpRestClient client = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beersearch));
 						
 						client.addParam(Constants.KEY_QUERY, searchQuery);
+						client.addParam(Constants.KEY_GET_RESULTS_AS_IDS, Constants.VALUE_GET_RESULTS_AS_IDS_TRUE);
 						
 						try {
 							client.execute(RequestMethod.POST);
@@ -129,7 +136,6 @@ public class BeerMap4AndroidMain extends Activity  {
 						if (getProgressDialog().isShowing()) {
 							Intent intent = new Intent(v.getContext(), SearchResultsActivity.class);
 							intent.putExtra(RESULTS_KEY, response);
-							intent.putExtra(getResources().getString(R.string.user_key), getUser());
 							startActivityForResult(intent, SEARCH_REQUEST_CODE);
 						}
 					}
@@ -155,8 +161,7 @@ public class BeerMap4AndroidMain extends Activity  {
 	}
     
     private void checkAuth() {
-    	if (System.currentTimeMillis() > getTimeoutTimeAbsMs()) {
-    		
+    	if (System.currentTimeMillis() > BeerMap4AndroidApp.getInstance().getTimeoutTimeAbsMs()) {
     		Log.i(TAG, "Timeout occurred. Prompting user to login.");
     		
     		Intent intent = new Intent(this, LogonActivity.class);
@@ -173,15 +178,7 @@ public class BeerMap4AndroidMain extends Activity  {
     		if (resultCode != RESULT_OK) {
     			setResult(RESULT_CANCELED);
     			finish();
-    		} else {
-    			if (data.getExtras() != null) {
-					Object userObj = data.getExtras().get(getString(R.string.user_key));
-					
-					if (userObj != null && userObj instanceof MappedUser) {
-						setUser((MappedUser)userObj);
-					}
-    			}
-    		}
+    		} 
     		
     	} else if (requestCode == SEARCH_REQUEST_CODE) {
     		runOnUiThread(new Runnable() {
@@ -251,7 +248,7 @@ public class BeerMap4AndroidMain extends Activity  {
 		
 		if (credentialsObj.has(Constants.KEY_USER)) {
 			try {
-				setUser(MappedUser.createMappedUser(credentialsObj.getJSONObject(Constants.KEY_USER)));
+				BeerMap4AndroidApp.getInstance().setUser(MappedUser.createMappedUser(credentialsObj.getJSONObject(Constants.KEY_USER)));
 			} catch (Exception e) {
 				Log.e(TAG, "JSON exception while retrieving user from cache file", e);
 			}
@@ -259,29 +256,13 @@ public class BeerMap4AndroidMain extends Activity  {
 		
 		if (credentialsObj.has(Constants.KEY_TIMEOUT_MS)) {
 			try {
-				setTimeoutTimeAbsMs(credentialsObj.getLong(Constants.KEY_TIMEOUT_MS));
+			    BeerMap4AndroidApp.getInstance().setTimeoutTimeAbsMs(credentialsObj.getLong(Constants.KEY_TIMEOUT_MS));
 				
 			} catch (Exception e) {
 				Log.e(TAG, "JSON exception while retrieving timeout from cache file", e);
 			}
 		}
     }
-
-	public void setUser(MappedUser user) {
-		this.user = user;
-	}
-
-	public MappedUser getUser() {
-		return user;
-	}
-
-	public void setTimeoutTimeAbsMs(long timeoutTimeAbsMs) {
-		this.timeoutTimeAbsMs = timeoutTimeAbsMs;
-	}
-
-	public long getTimeoutTimeAbsMs() {
-		return timeoutTimeAbsMs;
-	}
 
 	public void setProgressDialog(ProgressDialog progressDialog) {
 		this.progressDialog = progressDialog;
@@ -293,5 +274,27 @@ public class BeerMap4AndroidMain extends Activity  {
 		}
 		return progressDialog;
 	}
+
+    private void handleMyBeersBtnClick() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final HttpRestClient client 
+                    = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beersforuserid));
+                
+                client.addParam(Constants.KEY_USER_ID, String.valueOf(BeerMap4AndroidApp.getInstance().getUser().getId()));
+                
+                client.execute(RequestMethod.POST);
+                
+                final String response = client.getResponse();
+                
+                if (response != null && !response.isEmpty()) {
+                    Intent intent = new Intent(BeerMap4AndroidMain.this, SearchResultsActivity.class);
+                    intent.putExtra(RESULTS_KEY, response);
+                    startActivityForResult(intent, MY_BEERS_REQUEST_CODE);
+                }
+            }
+        }).start();
+    }
 	
 }

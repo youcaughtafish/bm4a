@@ -61,13 +61,14 @@ public class SearchResultsAdapter extends BaseAdapter {
 			holder.txtName = nameTextView;
 			holder.txtAbv = (TextView) convertView.findViewById(R.id.abv);
 			holder.txtDescript = (TextView) convertView.findViewById(R.id.descript);
-
+			holder.txtBrewery = (TextView) convertView.findViewById(R.id.brewery);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
 		holder.txtName.setText(searchArrayList.get(position).getName());
+		holder.txtBrewery.setText(searchArrayList.get(position).getBrewery().getName());
 		holder.txtAbv.setText(String.valueOf(searchArrayList.get(position).getAbv()));
 		holder.txtDescript.setText(searchArrayList.get(position).getDescript());
 
@@ -76,6 +77,7 @@ public class SearchResultsAdapter extends BaseAdapter {
 
 	private class ViewHolder {
 		TextView txtName;
+		TextView txtBrewery;
 		TextView txtAbv;
 		TextView txtDescript;
 	}

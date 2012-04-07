@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.spacepocalypse.R;
+import com.spacepocalypse.app.BeerMap4AndroidApp;
 import com.spacepocalypse.beermap2.domain.MappedBeer;
 import com.spacepocalypse.beermap2.domain.MappedBeerRating;
 import com.spacepocalypse.beermap2.domain.MappedUser;
@@ -112,117 +113,125 @@ public class DisplaySingleActivity extends Activity {
 	}
 	
 	private void initGui() {
-		setContentView(R.layout.display_single_layout);
-		final TextView nameTextView = (TextView)findViewById(R.id.displaySingle_beerName);
-		nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getInteger(R.integer.displaySingleNameFontSize));
-		nameTextView.setTextColor(getResources().getColor(R.color.nameDisplayColor));
-		
-		final EditText nameEdit = (EditText)findViewById(R.id.displaySingle_name_edit);
-		nameEdit.setVisibility(View.GONE);
-		
-		final EditText abvEdit = (EditText)findViewById(R.id.displaySingle_abv_edit);
-		abvEdit.setVisibility(View.GONE);
-		
-		setEditingCurrentBeer(false);
-		setEditingComment(false);
-		
-		final Button saveBtn = (Button)findViewById(R.id.displaySingle_saveButton);
-		saveBtn.setVisibility(View.GONE);
-		saveBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditText abvEdit = (EditText)findViewById(R.id.displaySingle_abv_edit);
-				try {
-					getThisBeer().setAbv(Double.valueOf(abvEdit.getText().toString()).floatValue());
-					
-				} catch (NumberFormatException e) {
-					Toast.makeText(DisplaySingleActivity.this,
-							"Abv is not a decimal number!",
-							Toast.LENGTH_LONG).show();
-					return;
-				}
-				
-				EditText nameEdit = (EditText)findViewById(R.id.displaySingle_name_edit);
-				getThisBeer().setName(nameEdit.getText().toString());
-				
-				EditText descriptEdit = (EditText)findViewById(R.id.displaySingle_descript_edit);
-				getThisBeer().setDescript(descriptEdit.getText().toString());
-				
-				JSONObject obj = new JSONObject(getThisBeer());
-				
-				HttpRestClient client = new HttpRestClient(DisplaySingleActivity.this, getString(R.string.service_name_beerupdate));
-				client.addParam(Constants.KEY_MAPPED_BEER, obj.toString());
-				
-				client.execute(RequestMethod.POST);
-				
-				JSONObject result = null;
-				try {
-					result = new JSONObject(client.getResponse());
-					
-				} catch (Exception e1) {
-					Log.e(TAG, "Error constructing json result object for beer update", e1);
-				}
-				
-				if (result.has(Constants.KEY_BM4A_JSON_RESULT)) {
-					try {
-						if (result.getBoolean(Constants.KEY_BM4A_JSON_RESULT)) {
-							
-							if (isEditingCurrentBeer()) {
-								saveBtn.setVisibility(View.GONE);
-								
-							} else {
-								saveBtn.setVisibility(View.VISIBLE);
-							}
-							
-							toggleVisibility();
-							setEditingCurrentBeer(!isEditingCurrentBeer());
-							copyTextFromEditToText();
-							
-						} else {
-							Toast.makeText(DisplaySingleActivity.this,
-									"There was a problem storing the changes!",
-									Toast.LENGTH_LONG).show();
-						}
-						
-					} catch (Exception e) {
-						Log.e(TAG, "Error retrieving beer update result from json response.", e);
-					}
-				}
-			}
-		});
-		
-		final Button editCommentButton = (Button)findViewById(R.id.displaySingle_editCommentButton);
-		editCommentButton.setText(getResources().getString(R.string.displaySingle_editCommentBtn_notedit));
-		editCommentButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				
-				if (isEditingComment()) {
-					if (getThisRating() == null) {
-						insertRating();
-					} else {
-						updateRating();
-					}
-				} else {
-					TextView textComment = (TextView)findViewById(R.id.displaySingle_rating_comment);
-					EditText editComment = (EditText)findViewById(R.id.displaySingle_rating_comment_edit);
-					Button editCommentButton = (Button)findViewById(R.id.displaySingle_editCommentButton);
-					
-					editCommentButton.setText(getResources().getString(R.string.displaySingle_editCommentBtn_edit));
-					editComment.setText(textComment.getText());
-					
-					textComment.setVisibility(View.GONE);
-					editComment.setVisibility(View.VISIBLE);
-					
-					RatingBar ratingBar = (RatingBar)findViewById(R.id.displaySingle_ratingBar);
-					ratingBar.setIsIndicator(false);
-					
-					setEditingComment(true);
-				}
-			}
+	    runOnUiThread(new Runnable() {
+	        @Override
+	        public void run() {
+	            setContentView(R.layout.display_single_layout);
+	            final TextView nameTextView = (TextView)findViewById(R.id.displaySingle_beerName);
+	            nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getInteger(R.integer.displaySingleNameFontSize));
+	            nameTextView.setTextColor(getResources().getColor(R.color.nameDisplayColor));
 
-			
-		});
+	            final EditText nameEdit = (EditText)findViewById(R.id.displaySingle_name_edit);
+	            nameEdit.setVisibility(View.GONE);
+
+	            final EditText abvEdit = (EditText)findViewById(R.id.displaySingle_abv_edit);
+	            abvEdit.setVisibility(View.GONE);
+
+	            setEditingCurrentBeer(false);
+	            setEditingComment(false);
+
+	            final Button saveBtn = (Button)findViewById(R.id.displaySingle_saveButton);
+	            saveBtn.setVisibility(View.GONE);
+	            saveBtn.setOnClickListener(new View.OnClickListener() {
+	                @Override
+	                public void onClick(View v) {
+	                    EditText abvEdit = (EditText)findViewById(R.id.displaySingle_abv_edit);
+	                    try {
+	                        getThisBeer().setAbv(Double.valueOf(abvEdit.getText().toString()).floatValue());
+
+	                    } catch (NumberFormatException e) {
+	                        Toast.makeText(DisplaySingleActivity.this,
+	                                "Abv is not a decimal number!",
+	                                Toast.LENGTH_LONG).show();
+	                        return;
+	                    }
+
+	                    EditText nameEdit = (EditText)findViewById(R.id.displaySingle_name_edit);
+	                    getThisBeer().setName(nameEdit.getText().toString());
+
+	                    EditText descriptEdit = (EditText)findViewById(R.id.displaySingle_descript_edit);
+	                    getThisBeer().setDescript(descriptEdit.getText().toString());
+
+	                    JSONObject obj = new JSONObject(getThisBeer());
+
+	                    HttpRestClient client = new HttpRestClient(DisplaySingleActivity.this, getString(R.string.service_name_beerupdate));
+	                    client.addParam(Constants.KEY_MAPPED_BEER, obj.toString());
+
+	                    client.execute(RequestMethod.POST);
+
+	                    JSONObject result = null;
+	                    try {
+	                        result = new JSONObject(client.getResponse());
+
+	                    } catch (Exception e1) {
+	                        Log.e(TAG, "Error constructing json result object for beer update", e1);
+	                    }
+
+	                    if (result.has(Constants.KEY_BM4A_JSON_RESULT)) {
+	                        try {
+	                            if (result.getBoolean(Constants.KEY_BM4A_JSON_RESULT)) {
+
+	                                if (isEditingCurrentBeer()) {
+	                                    saveBtn.setVisibility(View.GONE);
+
+	                                } else {
+	                                    saveBtn.setVisibility(View.VISIBLE);
+	                                }
+
+	                                toggleVisibility();
+	                                setEditingCurrentBeer(!isEditingCurrentBeer());
+	                                copyTextFromEditToText();
+
+	                            } else {
+	                                Toast.makeText(DisplaySingleActivity.this,
+	                                        "There was a problem storing the changes!",
+	                                        Toast.LENGTH_LONG).show();
+	                            }
+
+	                        } catch (Exception e) {
+	                            Log.e(TAG, "Error retrieving beer update result from json response.", e);
+	                        }
+	                    }
+	                }
+	            });
+
+	            final Button editCommentButton = (Button)findViewById(R.id.displaySingle_editCommentButton);
+	            editCommentButton.setText(getResources().getString(R.string.displaySingle_editCommentBtn_notedit));
+	            editCommentButton.setOnClickListener(new View.OnClickListener() {
+	                @Override
+	                public void onClick(View v) {
+
+	                    if (isEditingComment()) {
+	                        if (getThisRating() == null) {
+	                            insertRating();
+	                        } else {
+	                            updateRating();
+	                        }
+	                    } else {
+	                        TextView textComment = (TextView)findViewById(R.id.displaySingle_rating_comment);
+	                        EditText editComment = (EditText)findViewById(R.id.displaySingle_rating_comment_edit);
+	                        Button editCommentButton = (Button)findViewById(R.id.displaySingle_editCommentButton);
+
+	                        editCommentButton.setText(getResources().getString(R.string.displaySingle_editCommentBtn_edit));
+	                        editComment.setText(textComment.getText());
+
+	                        textComment.setVisibility(View.GONE);
+	                        editComment.setVisibility(View.VISIBLE);
+
+	                        RatingBar ratingBar = (RatingBar)findViewById(R.id.displaySingle_ratingBar);
+	                        ratingBar.setIsIndicator(false);
+
+	                        setEditingComment(true);
+	                    }
+	                }
+
+
+	            });
+
+
+	            ((RatingBar)findViewById(R.id.displaySingle_ratingBar)).setRating(3f);
+	        }
+	    });
 	}
 	
 	private void updateRating() {
@@ -233,7 +242,7 @@ public class DisplaySingleActivity extends Activity {
 		
 		MappedBeerRating rating = getThisRating();
 		
-		rating.setUser((MappedUser)getIntent().getSerializableExtra(getResources().getString(R.string.user_key)));
+		rating.setUser(BeerMap4AndroidApp.getInstance().getUser());
 		rating.setBeer(getThisBeer());
 		
 		int ratingBarValue = (int)ratingBar.getRating();
@@ -292,7 +301,7 @@ public class DisplaySingleActivity extends Activity {
 		EditText editComment = (EditText)findViewById(R.id.displaySingle_rating_comment_edit);
 		RatingBar ratingBar = (RatingBar)findViewById(R.id.displaySingle_ratingBar);
 		MappedBeerRating rating = new MappedBeerRating();
-		rating.setUser((MappedUser)getIntent().getSerializableExtra(getResources().getString(R.string.user_key)));
+		rating.setUser(BeerMap4AndroidApp.getInstance().getUser());
 		rating.setBeer(getThisBeer());
 		
 		int ratingBarValue = (int)ratingBar.getRating();
@@ -410,6 +419,14 @@ public class DisplaySingleActivity extends Activity {
 		if (name != null) {
 			nameTextView.setText(name);
 		}
+		
+		final TextView breweryTextView = (TextView)findViewById(R.id.displaySingle_brewery);
+		if (beer.getBrewery() != null && beer.getBrewery().getId() != Constants.INVALID_ID) {
+		    breweryTextView.setText(beer.getBrewery().getName());
+		
+		} else {
+		    breweryTextView.setText("");
+		}
 
 		TextView abvTextView = (TextView)findViewById(R.id.displaySingle_abv);
 		float abv = beer.getAbv();
@@ -430,6 +447,10 @@ public class DisplaySingleActivity extends Activity {
 
 			TextView comment = (TextView)findViewById(R.id.displaySingle_rating_comment);
 			comment.setText(rating.getComment());
+
+		} else {
+		    TextView comment = (TextView)findViewById(R.id.displaySingle_rating_comment);
+            comment.setText("");
 		}
 	}
 

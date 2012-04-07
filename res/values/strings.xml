@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">BeerMap4Android</string>
 	
-	<string name="web_service_address">192.168.1.132</string>
+	<string name="web_service_address">spacepocalypse.com</string>
 	<string name="webServiceResource">/beermap2/android</string>
 	
 	<string name="label">BeerMap</string>
@@ -10,10 +10,19 @@
 	<!-- service name for login -->
 	<string name="service_name_login">login</string>
 	
+	<!-- service name for beers for userid -->
+	<string name="service_name_beersforuserid">beersforuserid</string>
+	
 	<!-- service name for beer search -->
 	<string name="service_name_beersearch">beersearch</string>
 	
-		<!-- service name for beer update -->
+	<!-- service name for beer id search -->
+	<string name="service_name_beeridsearch">beerbyids</string>
+	
+	<!-- service name for all breweries -->
+	<string name="service_name_brewerysearch">brewerysearch</string>
+	
+	<!-- service name for beer update -->
 	<string name="service_name_beerupdate">beerupdate</string>
 	
 	<!-- service name for beer insert -->
@@ -69,9 +78,11 @@
     <string name="nonSslHttp">http://</string>
 
     <string name="credentialsFilename">user_credentials</string>
-    <item name="useLogonCacheing" format="boolean" type="bool">false</item>
+    <item name="useLogonCacheing" format="boolean" type="bool">true</item>
     <color name="nameDisplayColor">#FFFF00</color>
     <string name="displaySingleKey">com.spacepocalypse.display_single_key</string>
+    <string name="brewery_result_key">com.spacepocalypse.brewery_result_key</string>
+    <item type="integer" format="integer" name="brewerySearchRequestCode">1343</item>
     <item type="integer" format="integer" name="displaySingleRequestCode">1337</item>
     <item type="integer" format="integer" name="searchResultsNameFontSize">18</item>
     <item type="integer" format="integer" name="displaySingleNameFontSize">28</item>
@@ -85,4 +96,16 @@
     <string name="displaySingle_editCommentBtn_edit">Save Comment and Rating</string>
     <string name="displaySingle_editCommentBtn_notedit">Edit Comment and Rating</string>
     <string name="username">com.spacepocalypse.username</string>
+    <string name="brewery_name_str">Brewery Name:</string>
+    <string name="beer_name_str">Beer Name:</string>
+    <string name="abv_str">ABV:</string>
+    <string name="description_str">Description:</string>
+    <string name="edit_brewery_str">Edit Brewery</string>
+    <string name="store_new_beer_str">Store New Beer</string>
+    <string name="results_str">Results:</string>
+    <string name="search_str">Search</string>
+    <string name="searching_str">Searching…</string>
+    <string name="no_results_found_str">No Results Found</string>
+    <string name="add_beer_string">Add Beer</string>
+    <string name="my_beers_string">My Beers</string>
 </resources>

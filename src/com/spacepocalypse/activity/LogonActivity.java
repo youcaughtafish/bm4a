@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.spacepocalypse.R;
+import com.spacepocalypse.app.BeerMap4AndroidApp;
 import com.spacepocalypse.beermap2.domain.MappedUser;
 import com.spacepocalypse.beermap2.domain.json.JSONException;
 import com.spacepocalypse.beermap2.domain.json.JSONObject;
@@ -103,7 +104,10 @@ public class LogonActivity extends Activity {
 				
 				if (user != null && userTimeoutAbsMs > System.currentTimeMillis()) {
 					storeCredentialsToFile(jsonResponse.toString(), getResources().getString(R.string.credentialsFilename));
-					getIntent().putExtra(getString(R.string.user_key), user);
+					
+					final BeerMap4AndroidApp app = BeerMap4AndroidApp.getInstance();
+					app.setUser(user);
+					app.setTimeoutTimeAbsMs(userTimeoutAbsMs);
 				}					
 				
 			}

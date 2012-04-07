@@ -6,7 +6,8 @@
     <uses-sdk android:minSdkVersion="10" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true" 
+        android:name="com.spacepocalypse.app.BeerMap4AndroidApp">
         <activity android:name=".activity.BeerMap4AndroidMain"
                   android:label="@string/app_name">
             <intent-filter>
@@ -19,6 +20,7 @@
 		<activity android:name=".activity.LogonActivity" />
 		<activity android:name=".activity.DisplaySingleActivity" />
 		<activity android:name=".activity.InsertBeerActivity" />
+		<activity android:name=".activity.FindBreweryActivity"/>
     </application>
     
 </manifest>
