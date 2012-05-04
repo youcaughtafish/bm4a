@@ -12,6 +12,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -45,12 +48,20 @@ public class BeerMap4AndroidMain extends Activity  {
         setContentView(R.layout.main); 
         
         initGui();
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
         
+        final BeerMap4AndroidApp appInstance = BeerMap4AndroidApp.getInstance();
         if (useLogonCacheing()) {
-        	getStoredCredentials();
-    	} else {
-    		deleteStoredCredentials();
-    	}
+            appInstance.getStoredCredentials();
+            
+        } else {
+            appInstance.deleteStoredCredentials();
+        }
+        
         checkAuth();
     }
 
@@ -79,17 +90,6 @@ public class BeerMap4AndroidMain extends Activity  {
                 });
             }
         });
-	}
-
-	private void deleteStoredCredentials() {
-		String userCredentialsFilename = getResources().getString(R.string.credentialsFilename);
-    	String[] filenameList = fileList();
-    	for (String ea : filenameList) {
-    		if (ea.toLowerCase().equals(userCredentialsFilename)) {
-    			deleteFile(ea);
-    			return;
-    		}
-    	}
 	}
 
 	private OnClickListener createSearchBtnOnClickListener() {
@@ -156,6 +156,28 @@ public class BeerMap4AndroidMain extends Activity  {
     	return getProgressDialog();
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.logout_menu_item:
+                BeerMap4AndroidApp.getInstance().logout(this);
+                break;
+                
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        
+        return true;
+    }
+    
 	private boolean useLogonCacheing() {
 		return getResources().getBoolean(R.bool.useLogonCacheing);
 	}
@@ -202,68 +224,6 @@ public class BeerMap4AndroidMain extends Activity  {
     	}
     }
     
-    private void getStoredCredentials() {
-    	String userCredentialsFilename = getResources().getString(R.string.credentialsFilename);
-    	boolean fileDoesNotExist = true;
-    	String[] filenameList = fileList();
-    	for (String ea : filenameList) {
-    		if (ea.toLowerCase().equals(userCredentialsFilename)) {
-    			fileDoesNotExist = false;
-    			break;
-    		}
-    	}
-    	
-    	if (fileDoesNotExist) {
-    		return;
-    	}
-    	
-    	JSONObject credentialsObj = null;
-    	FileInputStream fin = null;	
-    	
-    	try {
-			fin = openFileInput(userCredentialsFilename);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
-			
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			
-			while ((line = reader.readLine()) != null){
-				sb.append(line);
-			}
-			
-			credentialsObj = new JSONObject(sb.toString());
-			
-    	} catch (Exception e) {
-			Log.e(TAG, "Error occurred while reading cached credentials.", e);
-			
-		} finally {
-			if (fin != null) {
-				try {
-					fin.close();
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage());
-				}
-			}
-		}
-		
-		if (credentialsObj.has(Constants.KEY_USER)) {
-			try {
-				BeerMap4AndroidApp.getInstance().setUser(MappedUser.createMappedUser(credentialsObj.getJSONObject(Constants.KEY_USER)));
-			} catch (Exception e) {
-				Log.e(TAG, "JSON exception while retrieving user from cache file", e);
-			}
-		}
-		
-		if (credentialsObj.has(Constants.KEY_TIMEOUT_MS)) {
-			try {
-			    BeerMap4AndroidApp.getInstance().setTimeoutTimeAbsMs(credentialsObj.getLong(Constants.KEY_TIMEOUT_MS));
-				
-			} catch (Exception e) {
-				Log.e(TAG, "JSON exception while retrieving timeout from cache file", e);
-			}
-		}
-    }
-
 	public void setProgressDialog(ProgressDialog progressDialog) {
 		this.progressDialog = progressDialog;
 	}

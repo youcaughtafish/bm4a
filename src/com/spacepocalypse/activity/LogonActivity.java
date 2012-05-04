@@ -1,13 +1,8 @@
 package com.spacepocalypse.activity;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,12 +13,10 @@ import android.widget.Toast;
 import com.spacepocalypse.R;
 import com.spacepocalypse.app.BeerMap4AndroidApp;
 import com.spacepocalypse.beermap2.domain.MappedUser;
-import com.spacepocalypse.beermap2.domain.json.JSONException;
 import com.spacepocalypse.beermap2.domain.json.JSONObject;
 import com.spacepocalypse.beermap2.service.Constants;
 import com.spacepocalypse.http.HttpRestClient;
 import com.spacepocalypse.http.HttpRestClient.RequestMethod;
-import com.spacepocalypse.utility.security.AeSimpleSHA1;
 
 public class LogonActivity extends Activity {
 	private static final String TAG = "LogonActivity";
@@ -103,7 +96,7 @@ public class LogonActivity extends Activity {
 				}
 				
 				if (user != null && userTimeoutAbsMs > System.currentTimeMillis()) {
-					storeCredentialsToFile(jsonResponse.toString(), getResources().getString(R.string.credentialsFilename));
+					BeerMap4AndroidApp.getInstance().storeCredentialsToFile(jsonResponse.toString());
 					
 					final BeerMap4AndroidApp app = BeerMap4AndroidApp.getInstance();
 					app.setUser(user);
@@ -125,27 +118,4 @@ public class LogonActivity extends Activity {
     		Toast.makeText(this, "Wrong Username or Password!", Toast.LENGTH_LONG).show();
     	}
     }
-
-
-	private void storeCredentialsToFile(String stringToWrite, String fileName)
-			throws JSONException {
-		FileOutputStream fos = null;
-		try {
-			fos = openFileOutput(fileName, Context.MODE_PRIVATE);
-			fos.write(stringToWrite.getBytes());
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage());
-				}
-			}
-		}
-	}
-
 }
