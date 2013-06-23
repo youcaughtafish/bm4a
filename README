@@ -2,19 +2,15 @@ B E E R M A P 4 A N D R O I D
 
 BeerMap for Android (bm4a) is an Android app that can be used with the BeerMap
 service (https://github.com/youcaughtafish/beermap2).  This project requires
-the Android SDK, as well as linking the build path with the beermap2 (link above)
-project. 
-
-A demo version of the web front-end is available at http://spacepocalypse.com:8080/beermap2/
-A demo version of the bm4a Android application is available at http://spacepocalypse.com/bm4a_latest.apk (use the credentials: username: test, password: test)
-
+the Android SDK. Please see https://github.com/youcaughtafish/bm4a/wiki/BeerMap-and-BM4A
+for more information.
 
 Unless otherwise stated, this project is licensed under the Apache
 License, Version 2.0:
 
 
 
-Copyright 2012 Dylan Moore
+Copyright 2013 Dylan Moore
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
