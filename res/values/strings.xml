@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_name">BeerMap4Android</string>
 	
-	<string name="web_service_address">192.168.1.132</string>
+	<string name="web_service_address">localhost</string>
 	<string name="webServiceResource">/beermap2/android</string>
 	
 	<string name="label">BeerMap</string>

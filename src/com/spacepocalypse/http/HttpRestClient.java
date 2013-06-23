@@ -52,7 +52,7 @@ public class HttpRestClient {
 	
 	public HttpRestClient(final Context context, final String serviceExtension) {
 		setContext(context);
-		setUseSSL(true);
+		setUseSSL(false);
 		
 		final String fullServiceUri = createFullServiceUri(serviceExtension);  // i.e. https://localhost:8443/beermap2/android/login
 		

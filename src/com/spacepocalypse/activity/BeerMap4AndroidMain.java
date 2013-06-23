@@ -1,11 +1,5 @@
 package com.spacepocalypse.activity;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -13,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,12 +15,7 @@ import android.widget.TextView;
 
 import com.spacepocalypse.R;
 import com.spacepocalypse.app.BeerMap4AndroidApp;
-import com.spacepocalypse.beermap2.domain.MappedUser;
-import com.spacepocalypse.beermap2.domain.json.JSONException;
-import com.spacepocalypse.beermap2.domain.json.JSONObject;
 import com.spacepocalypse.beermap2.service.Constants;
-import com.spacepocalypse.beermap2.service.BeerSearchEngine;
-import com.spacepocalypse.http.B4AWebClient;
 import com.spacepocalypse.http.HttpRestClient;
 import com.spacepocalypse.http.HttpRestClient.RequestMethod;
 
@@ -113,7 +101,7 @@ public class BeerMap4AndroidMain extends Activity  {
 						final HttpRestClient client = new HttpRestClient(BeerMap4AndroidMain.this, getString(R.string.service_name_beersearch));
 						
 						client.addParam(Constants.KEY_QUERY, searchQuery);
-						client.addParam(Constants.KEY_GET_RESULTS_AS_IDS, Constants.VALUE_GET_RESULTS_AS_IDS_TRUE);
+						client.addParam(Constants.KEY_GET_RESULTS_AS_IDS, Constants.VALUE_TRUE);
 						
 						try {
 							client.execute(RequestMethod.POST);
@@ -158,24 +146,24 @@ public class BeerMap4AndroidMain extends Activity  {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main_menu, menu);
+        return false;//true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.logout_menu_item:
-                BeerMap4AndroidApp.getInstance().logout(this);
-                break;
-                
-            default:
+//        switch (item.getItemId()) {
+//            case R.id.logout_menu_item:
+//                BeerMap4AndroidApp.getInstance().logout(this);
+//                break;
+//                
+//            default:
                 return super.onOptionsItemSelected(item);
-        }
-        
-        return true;
+//        }
+//        
+//        return true;
     }
     
 	private boolean useLogonCacheing() {

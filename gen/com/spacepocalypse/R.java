@@ -50,7 +50,6 @@ public final class R {
         public static final int insertLayout_descript_edit=0x7f0a001d;
         public static final int insertLayout_name_edit=0x7f0a0019;
         public static final int insertLayout_saveButton=0x7f0a0021;
-        public static final int logout_menu_item=0x7f0a0031;
         public static final int main_my_beers_btn=0x7f0a002b;
         public static final int menu_edit=0x7f0a0030;
         public static final int message=0x7f0a0022;
@@ -94,7 +93,6 @@ public final class R {
     }
     public static final class menu {
         public static final int display_single_menu=0x7f090000;
-        public static final int main_menu=0x7f090001;
     }
     public static final class raw {
         public static final int localhost_store=0x7f040000;

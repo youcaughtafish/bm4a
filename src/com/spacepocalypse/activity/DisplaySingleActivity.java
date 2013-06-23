@@ -38,7 +38,7 @@ import com.spacepocalypse.util.Conca;
 
 public class DisplaySingleActivity extends Activity {
 	private static final String TAG = "DisplaySingleActivity";
-	private static List<MappedValue> cachedValueTypes;
+//	private static List<MappedValue> cachedValueTypes;
 	private boolean editingCurrentBeer;
 	private boolean editingComment;
 	private MappedBeer thisBeer;
@@ -48,26 +48,26 @@ public class DisplaySingleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if (cachedValueTypes == null) {
-			HttpRestClient client = new HttpRestClient(this, getString(R.string.service_name_all_rating_types));
-			
-			client.execute(RequestMethod.POST);
-			String response = client.getResponse();
-			JSONArray jsonArr = null;
-			
-			try {
-				jsonArr = new JSONArray(response);
-				
-				cachedValueTypes = new ArrayList<MappedValue>();
-				
-				for (int i = 0; i < jsonArr.length(); i++) {
-					cachedValueTypes.add(MappedValue.createMappedValue(jsonArr.getJSONObject(i)));
-				}
-				
-			} catch (Exception e) {
-				Log.w(TAG, Conca.t("Error parsing JSON for rating value types. response=[", response, "]"), e);
-			}
-		}
+//		if (cachedValueTypes == null) {
+//			HttpRestClient client = new HttpRestClient(this, getString(R.string.service_name_all_rating_types));
+//			
+//			client.execute(RequestMethod.POST);
+//			String response = client.getResponse();
+//			JSONArray jsonArr = null;
+//			
+//			try {
+//				jsonArr = new JSONArray(response);
+//				
+//				cachedValueTypes = new ArrayList<MappedValue>();
+//				
+//				for (int i = 0; i < jsonArr.length(); i++) {
+//					cachedValueTypes.add(MappedValue.createMappedValue(jsonArr.getJSONObject(i)));
+//				}
+//				
+//			} catch (Exception e) {
+//				Log.w(TAG, Conca.t("Error parsing JSON for rating value types. response=[", response, "]"), e);
+//			}
+//		}
 		
         initGui();
         
@@ -246,12 +246,14 @@ public class DisplaySingleActivity extends Activity {
 		rating.setBeer(getThisBeer());
 		
 		int ratingBarValue = (int)ratingBar.getRating();
-		for (MappedValue val : cachedValueTypes) {
-			if (val.getValue() == ratingBarValue) {
-				rating.setRating(val);
-				break;
-			}
-		}
+//		for (MappedValue val : cachedValueTypes) {
+//			if (val.getValue() == ratingBarValue) {
+//				rating.setRatingValue(val);
+//				break;
+//			}
+//		}
+		
+		rating.setRatingValue(ratingBarValue);
 		
 		rating.setComment(editComment.getText().toString());
 		
@@ -305,12 +307,13 @@ public class DisplaySingleActivity extends Activity {
 		rating.setBeer(getThisBeer());
 		
 		int ratingBarValue = (int)ratingBar.getRating();
-		for (MappedValue val : cachedValueTypes) {
-			if (val.getValue() == ratingBarValue) {
-				rating.setRating(val);
-				break;
-			}
-		}
+//		for (MappedValue val : cachedValueTypes) {
+//			if (val.getValue() == ratingBarValue) {
+//				rating.setRating(val);
+//				break;
+//			}
+//		}
+		rating.setRatingValue(ratingBarValue);
 		
 		rating.setComment(editComment.getText().toString());
 		
@@ -443,7 +446,7 @@ public class DisplaySingleActivity extends Activity {
 			setThisRating(rating);
 			
 			RatingBar ratingBar = (RatingBar)findViewById(R.id.displaySingle_ratingBar);
-			ratingBar.setRating(rating.getRating().getValue());
+			ratingBar.setRating(rating.getRatingValue());
 
 			TextView comment = (TextView)findViewById(R.id.displaySingle_rating_comment);
 			comment.setText(rating.getComment());
